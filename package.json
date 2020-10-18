@@ -1,0 +1,27 @@
+{
+  "name": "solaris-builder",
+  "version": "1.0.0",
+  "description": "Build solaris vm for github actions.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmactions/solaris-builder.git"
+  },
+  "keywords": [
+    "GitHub",
+    "Actions",
+    "JavaScript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vmactions/solaris-builder/issues"
+  },
+  "homepage": "https://github.com/vmactions/solaris-builder#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.6",
+    "@actions/exec": "^1.0.4",
+    "@actions/github": "^4.0.0",
+    "@actions/tool-cache": "^1.6.0"
+  }
+}
