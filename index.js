@@ -238,7 +238,7 @@ async function run() {
     }
 
     await vboxmanage(imgName, "controlvm", "keyboardputfile  enablessh.txt");
-
+    core.info("setup ssh finished");
     let sshkey = "";
     await exec.exec("ssh solaris", [], {
       input: 'cat ~/.ssh/id_rsa.pub', listeners: {
@@ -280,6 +280,7 @@ async function run() {
     await exec.exec("sudo chmod 666 " + ova);
 
     core.info("Split file");
+    await io.rmRF(ova + ".zip");
     await exec.exec("zip -0 -s 2000m " + ova + ".zip " + ova + " id_rsa.pub");
     await exec.exec("ls -lah");
 
