@@ -274,7 +274,7 @@ async function run() {
       }
     }
 
-    core.info("Export " + vhd);
+    core.info("Export " + ova);
     await io.rmRF(ova);
     await vboxmanage(imgName, "export", "--output " + ova);
     await exec.exec("chmod 666 " + ova);
@@ -283,11 +283,12 @@ async function run() {
     await exec.exec("zip -0 -s 2000m " + ova + ".zip " + ova + " id_rsa.pub");
     await exec.exec("ls -lah");
 
-
   } catch (error) {
     core.setFailed(error.message);
   } finally {
-
+    if (process.env["DEBUG"]) {
+      await exec.exec("killall -9 ngrok", [], { ignoreReturnCode: true });
+    }
   }
 }
 
