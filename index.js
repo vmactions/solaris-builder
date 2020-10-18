@@ -28,10 +28,11 @@ async function pressCtrlAltF2(imgName) {
 }
 
 async function getScreenText(vmName) {
-  await vboxmanage(vmName, "controlvm", "screenshotpng  screen.png");
-  await exec.exec("sudo chmod 666 screen.png");
+  let png = path.join(__dirname, "/screen.png");
+  await vboxmanage(vmName, "controlvm", "screenshotpng  " + png);
+  await exec.exec("sudo chmod 666 " + png);
   let output = "";
-  await exec.exec("pytesseract  screen.png", [], {
+  await exec.exec("pytesseract  " + png, [], {
     listeners: {
       stdout: (s) => {
         output += s;
