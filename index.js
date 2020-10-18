@@ -277,7 +277,7 @@ async function run() {
     core.info("Export " + ova);
     await io.rmRF(ova);
     await vboxmanage(imgName, "export", "--output " + ova);
-    await exec.exec("chmod 666 " + ova);
+    await exec.exec("sudo chmod 666 " + ova);
 
     core.info("Split file");
     await exec.exec("zip -0 -s 2000m " + ova + ".zip " + ova + " id_rsa.pub");
