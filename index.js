@@ -79,10 +79,11 @@ async function waitFor(vmName, tag) {
 async function run() {
   try {
 
+    let sshport = 2223;
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "Host solaris " + "\n");
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " User root" + "\n");
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " HostName localhost" + "\n");
-    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " Port 2222" + "\n");
+    fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), " Port " + sshport + "\n");
     fs.appendFileSync(path.join(process.env["HOME"], "/.ssh/config"), "StrictHostKeyChecking=accept-new\n");
 
 
@@ -141,7 +142,7 @@ async function run() {
 
     await vboxmanage("", "import", ova);
 
-    await vboxmanage(imgName, "modifyvm", '--natpf1 "guestssh,tcp,,2222,,22"');
+    await vboxmanage(imgName, "modifyvm", '--natpf1 "guestssh,tcp,,' + sshport + ',,22"');
 
 
     await vboxmanage(imgName, "startvm", " --type headless");
