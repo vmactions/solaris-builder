@@ -254,6 +254,10 @@ async function run() {
 
     fs.writeFileSync(__dirname + "/id_rsa.pub", sshkey);
 
+    core.info("run init.sh");
+    let init = __dirname + "/init.sh";
+    await exec.exec("ssh solaris", [], { input: fs.readFileSync(init) });
+
     core.info("Power off");
     await exec.exec("ssh solaris", [], { input: 'shutdown -y -i5 -g0' });
 
