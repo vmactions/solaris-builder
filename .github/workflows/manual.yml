@@ -22,9 +22,9 @@ jobs:
     - name: Sleep
       run: |
         for i in $(seq 1 10) ; do echo $i; sleep 1; done
-        echo "please loging to ssh below, and run:
+        echo "please loging to ssh below, and run:"
         echo "============================="
-        echo 'bash build.sh conf/solaris-$RELEASE.conf'"
+        echo "bash build.sh conf/solaris-$RELEASE.conf"
         echo "============================="
         touch /tmp/keepalive
         
