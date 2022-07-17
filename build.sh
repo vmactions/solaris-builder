@@ -117,8 +117,15 @@ inputKeys "string root; enter; sleep 1; string $VM_ROOT_PASSWORD ; enter"
 sleep 2
 
 
+echo "set -e" >enablessh.local
 
-echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >enablessh.local
+#add ssh key twice, to avoid bugs.
+echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
+echo "" >>enablessh.local
+
+echo "echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys" >>enablessh.local
+echo "" >>enablessh.local
+
 
 echo "chmod 600 ~/.ssh/authorized_keys"  >>enablessh.local
 
@@ -129,10 +136,10 @@ $vmsh inputFile $osname enablessh.local
 
 
 ################## reboot
+
+#https://pdf4pro.com/amp/cdn/configuring-a-dns-client-and-the-name-service-17f6da.pdf
+
 inputKeys "string reboot; enter"
-waitForText "The highlighted entry will be executed automatically"
-sleep 1
-inputKeys "enter"
 
 
 waitForText "$VM_LOGIN_TAG"
