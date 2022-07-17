@@ -118,18 +118,36 @@ sleep 2
 
 
 
-cat enablessh.txt >enablessh.local
+echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >enablessh.local
 
-echo "
+echo "chmod 600 ~/.ssh/authorized_keys"  >>enablessh.local
 
-echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys
-
-chmod 600 ~/.ssh/authorized_keys
-
-" >>enablessh.local
+cat enablessh.txt >>enablessh.local
 
 
 $vmsh inputFile $osname enablessh.local
+
+
+################## reboot
+inputKeys "string reboot; enter"
+waitForText "The highlighted entry will be executed automatically"
+sleep 1
+inputKeys "enter"
+
+
+waitForText "$VM_LOGIN_TAG"
+sleep 2
+
+inputKeys "string root; enter; sleep 1; string $VM_ROOT_PASSWORD ; enter"
+
+sleep 2
+
+
+echo "wget -L http://get.opencsw.org/now && (echo y |  pkgadd -v  -d now  all) && rm -f now && /opt/csw/bin/pkgutil -U" >csw.txt
+echo "" >>csw.txt
+
+$vmsh inputFile $osname csw.txt
+
 
 
 
