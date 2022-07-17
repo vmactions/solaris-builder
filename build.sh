@@ -118,6 +118,9 @@ sleep 2
 
 
 echo "set -e" >enablessh.local
+echo "mkdir -p ~/.ssh" >enablessh.local
+echo "touch ~/.ssh/authorized_keys" >enablessh.local
+
 
 #add ssh key twice, to avoid bugs.
 echo "echo '$(base64 ~/.ssh/id_rsa.pub)' | openssl base64 -d >>~/.ssh/authorized_keys" >>enablessh.local
