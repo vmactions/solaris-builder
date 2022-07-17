@@ -1,0 +1,36 @@
+name: "Manual"
+on:
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    runs-on: macos-12
+    env:
+      RELEASE: "8.0"
+      DEBUG: 1
+      VM_OS_NAME: netbsd
+      NGROK_TOKEN : ${{ secrets.NGROK_TOKEN }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run establish a ngrok tunnel
+      id: test
+      uses: vmactions/ngrok-tunnel@v0.0.1
+      with:
+        protocol: tcp
+        port: 3390
+    - name: Sleep
+      run: |
+        for i in $(seq 1 10) ; do echo $i; sleep 1; done
+        echo "please loging to ssh below, and run 'bash build.sh conf/netbsd-$RELEASE.conf'"
+        touch /tmp/keepalive
+        
+    - uses: neilpang/debugger-action@master
+
+#    - run: |
+#        bash build.sh conf/netbsd-$RELEASE.conf
+
+
+
+
+
