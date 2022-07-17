@@ -24,7 +24,9 @@ svcadm disable ssh
 
 svcadm enable ssh
 
-svcadm disable gdm
+if ! svcadm disable gdm; then
+  echo "disabled gdm failed."
+fi
 
 
 
