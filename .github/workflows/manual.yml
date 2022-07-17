@@ -7,9 +7,9 @@ jobs:
   build:
     runs-on: macos-12
     env:
-      RELEASE: "8.0"
+      RELEASE: "11.4"
       DEBUG: 1
-      VM_OS_NAME: netbsd
+      VM_OS_NAME: solaris
       NGROK_TOKEN : ${{ secrets.NGROK_TOKEN }}
     steps:
     - uses: actions/checkout@v2
@@ -22,13 +22,16 @@ jobs:
     - name: Sleep
       run: |
         for i in $(seq 1 10) ; do echo $i; sleep 1; done
-        echo "please loging to ssh below, and run 'bash build.sh conf/netbsd-$RELEASE.conf'"
+        echo "please loging to ssh below, and run:
+        echo "============================="
+        echo 'bash build.sh conf/solaris-$RELEASE.conf'"
+        echo "============================="
         touch /tmp/keepalive
         
     - uses: neilpang/debugger-action@master
 
 #    - run: |
-#        bash build.sh conf/netbsd-$RELEASE.conf
+#        bash build.sh conf/solaris-$RELEASE.conf
 
 
 
