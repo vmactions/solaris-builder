@@ -118,8 +118,8 @@ sleep 2
 
 
 echo "set -e" >enablessh.local
-echo "mkdir -p ~/.ssh" >enablessh.local
-echo "touch ~/.ssh/authorized_keys" >enablessh.local
+echo "mkdir -p ~/.ssh" >>enablessh.local
+echo "touch ~/.ssh/authorized_keys" >>enablessh.local
 
 
 #add ssh key twice, to avoid bugs.
