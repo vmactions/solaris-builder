@@ -2,8 +2,6 @@
 
 
 
-passwd -d root
-
 
 
 
