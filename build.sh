@@ -138,27 +138,6 @@ cat enablessh.txt >>enablessh.local
 $vmsh inputFile $osname enablessh.local
 
 
-################## reboot
-
-#https://pdf4pro.com/amp/cdn/configuring-a-dns-client-and-the-name-service-17f6da.pdf
-
-inputKeys "string reboot; enter"
-
-
-waitForText "$VM_LOGIN_TAG"
-sleep 2
-
-inputKeys "string root; enter; sleep 1; string $VM_ROOT_PASSWORD ; enter"
-
-sleep 2
-
-
-echo "wget -L http://get.opencsw.org/now && (echo y |  pkgadd -v  -d now  all) && rm -f now && /opt/csw/bin/pkgutil -U" >csw.txt
-echo "" >>csw.txt
-
-$vmsh inputFile $osname csw.txt
-
-
 
 
 ###############################################################

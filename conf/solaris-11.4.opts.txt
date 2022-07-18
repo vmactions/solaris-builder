@@ -44,7 +44,9 @@ Installation Summary | f2
 The installation of Oracle Solaris has completed successfully | f7
 
 
-solaris halt: initiated by root | enter
+System is halted. It is now safe to power it off | sleep 1
+
+
 
 
 

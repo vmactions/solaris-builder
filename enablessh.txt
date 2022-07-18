@@ -30,22 +30,7 @@ svcadm enable ssh
 
 
 
-if [ ! -e "/etc/nsswitch.conf" ]; then
-  cp /etc/nsswitch.dns  /etc/nsswitch.conf
-  nscfg import name-service/switch
-  svcadm refresh name-service/switch
-  svcadm restart name-service/switch
-fi
-
-
-if [ ! -e "/etc/resolv.conf" ]; then
-  echo "nameserver      8.8.8.8" >"/etc/resolv.conf"
-  nscfg import dns/client
-  svcadm refresh dns/client
-  svcadm restart dns/client
-fi
-
-
+wget -L http://get.opencsw.org/now && (echo y |  pkgadd -v  -d now  all) && rm -f now && /opt/csw/bin/pkgutil -U
 
 cp .bashrc .bash_profile
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
