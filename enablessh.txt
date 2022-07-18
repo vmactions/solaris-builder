@@ -41,6 +41,7 @@ if ! /opt/csw/bin/pkgutil -U ; then
   sleep 10
 fi
 
+bootadm set-menu timeout=1
 
 cp .bashrc .bash_profile
 

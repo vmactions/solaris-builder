@@ -143,8 +143,6 @@ $vmsh inputFile $osname enablessh.local
 ###############################################################
 
 
-ssh $osname "$VM_INSTALL_CMD ca-certificates"
-
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >id_rsa.pub
 
 
