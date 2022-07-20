@@ -8,6 +8,7 @@ on:
       - '.github/workflows/build.yml'
       - '*.txt'
       - 'conf/*'
+      - 'hooks/*'
 
   release:
     types: [ created ]
