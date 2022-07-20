@@ -23,6 +23,13 @@ gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /
 ls -lah /opt/csw/bin/
 
 
+/opt/csw/bin/pkgutil -y -i cacertificates
+
+rm -rf /etc/openssl/certs/*
+
+cp /etc/opt/csw/ssl/certs/* /etc/openssl/certs/
+
+
 
 bootadm set-menu timeout=1
 
