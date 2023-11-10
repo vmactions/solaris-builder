@@ -25,11 +25,16 @@ jobs:
     strategy:
       matrix:
         os: ["11.4"]
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - uses: vmactions/cf-tunnel@v0
+      id: tunnel
+      with:
+        protocol: http
+        port: 8000
     - run: |
         bash build.sh conf/solaris-${{ matrix.os }}.conf
     - name: Upload Release Asset
@@ -40,8 +45,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
-          solaris-${{ matrix.os }}.ova
+          solaris-${{ matrix.os }}.qcow2.xz
           solaris-${{ matrix.os }}-id_rsa.pub
-          solaris-${{ matrix.os }}-mac.id_rsa
+          solaris-${{ matrix.os }}-host.id_rsa
 
 
