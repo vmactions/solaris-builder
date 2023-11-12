@@ -87,7 +87,7 @@ $vmsh  processOpts  $osname  "$opts"
 
 $vmsh shutdownVM $osname
 
-
+$vmsh destroyVM $osname
 
 $vmsh startVM $osname
 
