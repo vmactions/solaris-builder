@@ -171,6 +171,9 @@ sleep 5
 
 $vmsh shutdownVM $osname
 
+while $vmsh isRunning $osname; do
+  sleep 5
+done
 
 ##############################################################
 
