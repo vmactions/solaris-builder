@@ -38,13 +38,13 @@ Keyboard| f2
 Password | string vmactions.org ; tab ; string vmactions.org ; f2
 
 
-Support configurations | f2
+Registration | f2
 
 
 
 
 
-installation of Oracle Solaris has completed | f7
+nstallation of Oracle Solaris has completed | f7
 
 
 System is halted. It is now safe to power it off | sleep 1
