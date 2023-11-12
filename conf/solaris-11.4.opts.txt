@@ -4,9 +4,9 @@ To select the keyboard layout | enter
 
 select the language you wish to use | enter
 
-Please enter a numbe  | enter
+Please enter a numbe  | enter; sleep 2; f2
 
-Continue | f2
+#Continue | f2
 
 Select discovery method for disks | f2
 
@@ -35,7 +35,7 @@ Select the language territory  | f2; sleep 2; f2
 Keyboard| f2
 
 #System Root 
-Password | string vmactions.org ; tab ; string vmactions.org ; f2 ; sleep 2; f2
+Password | string vmactions.org ; tab ; string vmactions.org ; f2 ; sleep 2; f2; sleep 2; f2
 
 
 #Registration | f2
