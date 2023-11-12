@@ -2,11 +2,11 @@
 
 To select the keyboard layout | enter
 
-To select the language you wish to use | enter
+select the language you wish to use | enter
 
 Please enter a numbe  | enter
 
-F2_Continue | f2
+Continue | f2
 
 Select discovery method for disks | f2
 
@@ -14,34 +14,37 @@ Where should Oracle Solaris be installed | f2
 
 Oracle Solaris can be installed on the whole disk | f2
 
-Computer Name | f2
+#Computer Name
+name must start | f2
 
-Select a wired network connection to configure | f2
+Select a wired network connection | f2
 
-Allow DHCP to configure the interface | f2
+Configure the interface | f2
 
 Select the region  | f2
 
-Select the default language | f2
+#Select the default 
+language | f2
 
 Select the language territory  | f2
 
 Date and Time | f2
 
 
-Select your keyboard | f2
+#Select your keyboard 
+Keyboard| f2
 
-System Root Password | string vmactions.org ; tab ; string vmactions.org ; f2
-
-
-Support - Registration | f2
-
-
-Installation Summary | f2
+#System Root 
+Password | string vmactions.org ; tab ; string vmactions.org ; f2
 
 
+Support configurations | f2
 
-The installation of Oracle Solaris has completed successfully | f7
+
+
+
+
+installation of Oracle Solaris has completed | f7
 
 
 System is halted. It is now safe to power it off | sleep 1
