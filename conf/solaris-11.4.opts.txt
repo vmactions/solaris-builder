@@ -26,19 +26,19 @@ Select the region  | f2
 #Select the default 
 language | f2
 
-Select the language territory  | f2
+Select the language territory  | f2; sleep 2; f2
 
-Date and Time | f2
+#Date and Time | f2
 
 
 #Select your keyboard 
 Keyboard| f2
 
 #System Root 
-Password | string vmactions.org ; tab ; string vmactions.org ; f2
+Password | string vmactions.org ; tab ; string vmactions.org ; f2 ; sleep 2; f2
 
 
-Registration | f2
+#Registration | f2
 
 
 
