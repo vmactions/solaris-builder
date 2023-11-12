@@ -10,9 +10,9 @@ Continue | f2
 
 Select discovery method for disks | f2
 
-Where should Oracle Solaris be installed | f2
+Where should Oracle Solaris be installed | f2 ;sleep 2; f2
 
-Oracle Solaris can be installed on the whole disk | f2
+#Oracle Solaris can be installed on the whole disk | f2
 
 #Computer Name
 name must start | f2
