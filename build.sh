@@ -83,7 +83,8 @@ sleep 2
 
 $vmsh  processOpts  $osname  "$opts"
 
-
+echo "sleep 180 seconds. just wait"
+sleep 180
 
 $vmsh shutdownVM $osname
 

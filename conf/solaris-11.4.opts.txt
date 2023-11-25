@@ -47,7 +47,7 @@ Password | string vmactions.org ; tab ; string vmactions.org ; f2 ; sleep 2; f2;
 Reboot to start the newly | f7
 
 
-syncing file systems... done | sleep 1
+#syncing file systems... done | sleep 1
 
 #System is halted. It is now safe to power it off | sleep 1
 
