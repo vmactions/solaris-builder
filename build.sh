@@ -98,10 +98,6 @@ $vmsh startVM $osname
 
 ###############################################
 
-waitForText "The highlighted entry will be executed automatically"
-sleep 1
-inputKeys "enter"
-
 
 waitForText "$VM_LOGIN_TAG"
 sleep 2
