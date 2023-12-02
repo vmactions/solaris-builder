@@ -29,7 +29,8 @@ vmsh="$VM_VBOX"
 
 
 export VM_OS_NAME
-
+export VM_RELEASE
+export VM_DISK
 
 
 ##############################################################
