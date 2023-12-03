@@ -30,6 +30,7 @@ vmsh="$VM_VBOX"
 
 export VM_OS_NAME
 export VM_RELEASE
+export VM_OCR
 export VM_DISK
 
 
@@ -62,7 +63,7 @@ chmod +x "$vmsh"
 
 
 
-
+$vmsh startWeb $osname
 
 
 $vmsh setup 
@@ -72,7 +73,7 @@ if ! $vmsh clearVM $osname; then
 fi
 
 
-$vmsh startWeb $osname
+
 
 
 
@@ -93,14 +94,16 @@ $vmsh destroyVM $osname
 
 $vmsh startVM $osname
 
-
+sleep 2
 
 
 ###############################################
 
 
+
 waitForText "$VM_LOGIN_TAG"
-sleep 2
+
+sleep 3
 
 inputKeys "string root; enter; sleep 1; string $VM_ROOT_PASSWORD ; enter"
 
@@ -148,7 +151,12 @@ echo "     ServerAliveInterval 1" >>.ssh/config
 EOF
 
 
+###############################################################
+
+
 if [ -e "hooks/postBuild.sh" ]; then
+  echo "hooks/postBuild.sh"
+  cat "hooks/postBuild.sh"
   ssh $osname sh<"hooks/postBuild.sh"
 fi
 
@@ -161,6 +169,38 @@ if [ "$VM_PRE_INSTALL_PKGS" ]; then
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
 
+
+#upload reboot.sh
+if [ -e "hooks/reboot.sh" ]; then
+  echo "hooks/reboot.sh"
+  cat "hooks/reboot.sh"
+  scp hooks/reboot.sh $osname:/reboot.sh
+else
+  ssh "$osname" "cat - >/reboot.sh" <<EOF
+sleep 5
+ssh host sh <<END
+env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
+
+END
+
+EOF
+fi
+
+
+#set cronjob
+ssh "$osname" sh <<EOF
+chmod +x /reboot.sh
+cat /reboot.sh
+if uname -a | grep SunOS >/dev/null; then
+crontab -l | {  cat;  echo "@reboot /reboot.sh";   } | crontab --
+else
+crontab -l | {  cat;  echo "@reboot /reboot.sh";   } | crontab -
+fi
+crontab -l
+
+EOF
+
+
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
 sleep 5
@@ -172,6 +212,7 @@ $vmsh shutdownVM $osname
 while $vmsh isRunning $osname; do
   sleep 5
 done
+
 
 ##############################################################
 
@@ -190,6 +231,17 @@ cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 ls -lah
 
 
+##############################################################
 
+echo "Checking the packages: $VM_RSYNC_PKG $VM_SSHFS_PKG"
+
+if [ -z "$VM_RSYNC_PKG$VM_SSHFS_PKG" ]; then
+  echo "skip"
+else
+  $vmsh addSSHAuthorizedKeys $osname-$VM_RELEASE-id_rsa.pub
+  $vmsh startVM $osname
+  $vmsh waitForVMReady $osname
+  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_RSYNC_PKG $VM_SSHFS_PKG"
+fi
 
 
