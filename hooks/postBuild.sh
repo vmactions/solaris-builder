@@ -35,7 +35,12 @@ bootadm set-menu timeout=1
 
 
 
+cat /etc/auto_master | grep -v /home >auto.txt
+cat auto.txt >/etc/auto_master
+rm -f auto.txt
 
+automount -v
+svcadm restart autofs
 
 
 
