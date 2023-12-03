@@ -34,6 +34,7 @@ cp /etc/opt/csw/ssl/certs/* /etc/openssl/certs/
 bootadm set-menu timeout=1
 
 
+svcadm disable sendmail
 
 cat /etc/auto_master | grep -v /home >auto.txt
 cat auto.txt >/etc/auto_master
