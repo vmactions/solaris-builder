@@ -72,11 +72,6 @@ if ! $vmsh clearVM $osname; then
   echo "vm does not exists"
 fi
 
-
-
-
-
-
 $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
 
 
