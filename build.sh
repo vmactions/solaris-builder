@@ -87,6 +87,8 @@ $vmsh shutdownVM $osname
 
 $vmsh destroyVM $osname
 
+
+
 $vmsh startVM $osname
 
 sleep 2
@@ -109,9 +111,7 @@ if [ ! -e ~/.ssh/id_rsa ] ; then
   ssh-keygen -f  ~/.ssh/id_rsa -q -N "" 
 fi
 
-echo "set -e" >enablessh.local
-echo "mkdir -p ~/.ssh" >>enablessh.local
-echo "touch ~/.ssh/authorized_keys" >>enablessh.local
+cat enablessh.txt >enablessh.local
 
 
 #add ssh key twice, to avoid bugs.
@@ -122,9 +122,10 @@ echo "echo '$(cat ~/.ssh/id_rsa.pub)' >>~/.ssh/authorized_keys" >>enablessh.loca
 echo "" >>enablessh.local
 
 
-echo "chmod 600 ~/.ssh/authorized_keys"  >>enablessh.local
-
-cat enablessh.txt >>enablessh.local
+echo >>enablessh.local
+echo "chmod 600 ~/.ssh/authorized_keys">>enablessh.local
+echo "exit">>enablessh.local
+echo >>enablessh.local
 
 
 $vmsh inputFile $osname enablessh.local
@@ -198,11 +199,15 @@ EOF
 
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
-sleep 5
+sleep 30
 
 ###############################################################
 
-$vmsh shutdownVM $osname
+if $vmsh isRunning $osname; then
+  if ! $vmsh shutdownVM $osname; then
+    echo "shutdown error"
+  fi
+fi
 
 while $vmsh isRunning $osname; do
   sleep 5
