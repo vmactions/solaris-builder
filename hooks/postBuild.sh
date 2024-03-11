@@ -43,5 +43,9 @@ rm -f auto.txt
 automount -v
 svcadm restart autofs
 
+pkg update --accept
+
+
+
 
 
