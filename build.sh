@@ -194,15 +194,7 @@ if [ -e "hooks/postBuild.sh" ]; then
   ssh $osname sh<"hooks/postBuild.sh"
 fi
 
-
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
-
-
-if [ "$VM_PRE_INSTALL_PKGS" ]; then
-  echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
-  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
-fi
-
 
 #upload reboot.sh
 if [ -e "hooks/reboot.sh" ]; then
@@ -233,6 +225,31 @@ fi
 crontab -l
 
 EOF
+
+# Need to shutdown VM before installing packages as the postBuild hook
+# probably upgraded the OS snapshot so it needs to reboot.
+ssh $osname  "$VM_SHUTDOWN_CMD"
+
+sleep 30
+
+if $vmsh isRunning $osname; then
+  if ! $vmsh shutdownVM $osname; then
+    echo "shutdown error"
+  fi
+fi
+
+while $vmsh isRunning $osname; do
+  sleep 5
+done
+
+$vmsh addSSHAuthorizedKeys ~/.ssh/id_rsa
+$vmsh startVM $osname
+$vmsh waitForVMReady $osname
+
+if [ "$VM_PRE_INSTALL_PKGS" ]; then
+  echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+  ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+fi
 
 
 ssh $osname  "$VM_SHUTDOWN_CMD"
