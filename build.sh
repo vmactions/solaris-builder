@@ -242,9 +242,23 @@ while $vmsh isRunning $osname; do
   sleep 5
 done
 
-$vmsh addSSHAuthorizedKeys ~/.ssh/id_rsa
+# Start it back up
 $vmsh startVM $osname
-$vmsh waitForVMReady $osname
+
+sleep 2
+
+
+###############################################
+
+if [ -e "hooks/waitForLoginTag.sh" ]; then
+  echo "hooks/waitForLoginTag.sh"
+  cat "hooks/waitForLoginTag.sh"
+  . "hooks/waitForLoginTag.sh"
+else
+  waitForText "$VM_LOGIN_TAG"
+fi
+
+sleep 3
 
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
