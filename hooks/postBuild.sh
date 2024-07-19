@@ -13,4 +13,12 @@ rm -f auto.txt
 automount -v
 svcadm restart autofs
 
+
+# Fix issues with locale settings that can cause spurious failures.
+unset LC_ALL LANG LC_CTYPE LC_COLLATE LC_NUMERIC LC_TIME LC_MONETARY LC_MESSAGES
+export LC_ALL=C
+export LANG=C
+export LC_COLLATE=C
+
+# Perform full OS update
 pkg update --accept

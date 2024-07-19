@@ -285,18 +285,20 @@ done
 
 ##############################################################
 
+echo "contents of directory:"
+ls -lah
 
-
-
-ova="$osname-$VM_RELEASE.qcow2"
-
+echo "free space:"
+df -h
 
 echo "Exporting $ova"
+
+ova="$osname-$VM_RELEASE.qcow2"
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
-
+echo "contents after export:"
 ls -lah
 
 
