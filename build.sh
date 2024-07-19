@@ -260,6 +260,13 @@ fi
 
 sleep 3
 
+# purge old snapshots from the system upgrade
+
+echo "beadm list"
+ssh $osname sh <<<"beadm list"
+#echo "beadm destroy -s -F solaris"
+#ssh $osname sh <<<"beadm destroy -s -F solaris"
+
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
@@ -291,10 +298,18 @@ ls -lah
 echo "free space:"
 df -h
 
+echo "Clean up ISO for more space"
+sudo rm -f solaris.iso
+
+echo "free space:"
+df -h
+
 echo "Exporting $ova"
 
-ova="$osname-$VM_RELEASE.qcow2"
-$vmsh exportOVA $osname "$ova"
+ova="$osname-$VM_RELEASE.qcow2.xz"
+
+#$vmsh exportOVA $osname "$ova"
+sudo xz -z -9 -k --stdout $osname.qcow2 > $ova
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
