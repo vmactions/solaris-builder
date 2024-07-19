@@ -262,16 +262,17 @@ sleep 3
 
 # purge old snapshots from the system upgrade
 
+echo "Purging old OS snapshot from before upgrade"
+
 echo "beadm list"
 ssh $osname sh <<<"beadm list"
-#echo "beadm destroy -s -F solaris"
-#ssh $osname sh <<<"beadm destroy -s -F solaris"
+echo "beadm destroy -F solaris"
+ssh $osname sh <<<"beadm destroy -F solaris"
 
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
-
 
 ssh $osname  "$VM_SHUTDOWN_CMD"
 
@@ -304,12 +305,17 @@ sudo rm -f solaris.iso
 echo "free space:"
 df -h
 
-echo "Exporting $ova"
-
 ova="$osname-$VM_RELEASE.qcow2.xz"
 
+echo "Exporting $ova ... this will take a long time"
+
+# The exportOVA command roughly does the same thing, but creates an
+# intermediate copy which we don't have the disk space for.  So instead we
+# just run xz direct ourselves, but because of the GitHub size limits we're
+# going to use the "-9" compression level.
+
 #$vmsh exportOVA $osname "$ova"
-sudo xz -z -9 -k --stdout $osname.qcow2 > $ova
+sudo xz -z -9 -k --verbose --stdout $osname.qcow2 > $ova
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
