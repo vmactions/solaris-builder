@@ -267,16 +267,20 @@ if [ -e "hooks/postBuild.sh" ]; then
   ssh $osname sh<"hooks/postBuild.sh"
 fi
 
-restart_and_wait
 
-# purge old snapshots from the system upgrade
+# No upgrade done with CBE image, so no need to reboot and call beadm destroy.
+# If they ever do start publishing upgrade packages, we'll need to re-enable.
 
-echo "Purging old OS snapshot from before upgrade"
-
-echo "beadm list"
-ssh $osname sh <<<"beadm list"
-echo "beadm destroy -F solaris"
-ssh $osname sh <<<"beadm destroy -F solaris"
+## purge old snapshots from the system upgrade
+#
+#restart_and_wait
+#
+#echo "Purging old OS snapshot from before upgrade"
+#
+#echo "beadm list"
+#ssh $osname sh <<<"beadm list"
+#echo "beadm destroy -F solaris"
+#ssh $osname sh <<<"beadm destroy -F solaris"
 
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"

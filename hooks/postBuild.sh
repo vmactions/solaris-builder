@@ -2,6 +2,12 @@
 
 cp .bashrc .bash_profile
 
+## Fix issues with locale settings that can cause spurious failures.
+unset LC_ALL LANG LC_CTYPE LC_COLLATE LC_NUMERIC LC_TIME LC_MONETARY LC_MESSAGES
+export LC_ALL=C
+export LANG=C
+export LC_COLLATE=C
+
 bootadm set-menu timeout=1
 
 svcadm disable sendmail
@@ -13,13 +19,10 @@ rm -f auto.txt
 automount -v
 svcadm restart autofs
 
+# We are using the CBE solaris release now, it doesn't have any updates but it
+# does have the wrong package publisher set by default:
+#  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
+pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
 
-# Fix issues with locale settings that can cause spurious failures.
-#nlsadm set-system-locale C
-unset LC_ALL LANG LC_CTYPE LC_COLLATE LC_NUMERIC LC_TIME LC_MONETARY LC_MESSAGES
-export LC_ALL=C
-export LANG=C
-export LC_COLLATE=C
-
-# Perform full OS update
-pkg update --accept --no-backup-be -v
+# If CBE ever starts releasing upgrades, we'll need to re-enable the upgrade:
+#pkg update --accept --no-backup-be -v
