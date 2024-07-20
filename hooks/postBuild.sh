@@ -24,6 +24,8 @@ svcadm restart autofs
 #  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
 pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
 
+# Refresh Package list
+pkg refresh --full
 
 # Install legacy OpenCSW package repository
 wget -L http://get.opencsw.org/now
@@ -35,5 +37,11 @@ fi
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
 
 
-# If CBE ever starts releasing upgrades, we'll need to re-enable the upgrade:
-#pkg update --accept --no-backup-be -v
+# Upgrade release.  Catch return code 4 and treat as success as it just means
+# nothing to upgrade.
+rv=0
+pkg update --accept --no-backup-be -v '*' || rv=$?
+if [ "$rv" != 0 -a "$rv" != 4 ] ; then
+  echo "pkg update failed"
+  exit 1
+fi

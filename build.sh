@@ -260,7 +260,6 @@ restart_and_wait() {
 # probably upgraded the OS snapshot so it needs to reboot.
 restart_and_wait
 
-
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
@@ -268,20 +267,24 @@ if [ -e "hooks/postBuild.sh" ]; then
 fi
 
 
-# No upgrade done with CBE image, so no need to reboot and call beadm destroy.
-# If they ever do start publishing upgrade packages, we'll need to re-enable.
+# If a system upgrade was performed by the postBuild.sh, we need to restart and
+# purge the old OS snapshot to free up space.
+restart_and_wait
 
-## purge old snapshots from the system upgrade
-#
-#restart_and_wait
-#
-#echo "Purging old OS snapshot from before upgrade"
-#
-#echo "beadm list"
-#ssh $osname sh <<<"beadm list"
-#echo "beadm destroy -F solaris"
-#ssh $osname sh <<<"beadm destroy -F solaris"
+echo "Purging any stale OS snapshots..."
+ssh "$osname" sh <<'EOF'
+beadm list | tail +3 | while read -r line; do
+  name=`echo $line | awk '{ print $1 };'`
+  mountpoint=`echo $line | awk '{ print $3 };'`
+  if [ "$mountpoint" = "-" ] ; then
+    echo "Removing $name: beadm destroy -F $name"
+    beadm destroy -F $name
+  fi
+done
+EOF
 
+
+# Install any requested packages
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
@@ -293,21 +296,17 @@ shutdown_and_wait
 
 ##############################################################
 
-echo "contents of directory:"
+echo "Clean up ISO for more space"
+sudo rm -f solaris.iso
+
+echo "contents of home directory:"
 ls -lah
 
 echo "free space:"
 df -h
 
-echo "Clean up ISO for more space"
-sudo rm -f solaris.iso
-
-echo "free space:"
-df -h
 
 ova="$osname-$VM_RELEASE.qcow2.xz"
-
-
 # The exportOVA command doesn't try to compact the qcow2 file and also uses
 # a lesser compression.
 #$vmsh exportOVA $osname "$ova"
