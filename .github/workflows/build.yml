@@ -39,7 +39,7 @@ jobs:
     env:
       SEC_VBOX : ${{ secrets.SEC_VBOX }}
     steps:
-    - run: apt-get install -y pv
+    - run: sudo apt-get install -y pv
     - uses: actions/checkout@v4
     - name: Creating Web console
       uses: vmactions/cf-tunnel@v0
