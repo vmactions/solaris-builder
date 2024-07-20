@@ -24,5 +24,16 @@ svcadm restart autofs
 #  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
 pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
 
+
+# Install legacy OpenCSW package repository
+wget -L http://get.opencsw.org/now
+echo y | pkgadd -v -d now all
+rm -f now
+if ! /opt/csw/bin/pkgutil -U ; then
+  echo "pkgutil failed"
+fi
+gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
+
+
 # If CBE ever starts releasing upgrades, we'll need to re-enable the upgrade:
 #pkg update --accept --no-backup-be -v

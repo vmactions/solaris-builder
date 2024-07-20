@@ -228,8 +228,8 @@ crontab -l
 
 EOF
 
-#set zfs TRIM/discard support to try to reclaim space when large changes are
-#made
+# set zfs TRIM/discard support to try to reclaim space when large changes are
+# made
 ssh "$osname" sh <<EOF
 echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
 echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
