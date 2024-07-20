@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 
 _conf="$1"
@@ -124,22 +124,26 @@ fi
 echo "VM image size immediately after install:"
 ls -lh ${osname}.qcow2
 
-$vmsh startVM $osname
 
-sleep 2
 
+start_and_wait() {
+  $vmsh startVM $osname
+  sleep 2
+  if [ -e "hooks/waitForLoginTag.sh" ]; then
+    echo "hooks/waitForLoginTag.sh"
+    cat "hooks/waitForLoginTag.sh"
+    . "hooks/waitForLoginTag.sh"
+  else
+    waitForText "$VM_LOGIN_TAG"
+  fi
+
+  sleep 3
+}
 
 ###############################################
 
-if [ -e "hooks/waitForLoginTag.sh" ]; then
-  echo "hooks/waitForLoginTag.sh"
-  cat "hooks/waitForLoginTag.sh"
-  . "hooks/waitForLoginTag.sh"
-else
-  waitForText "$VM_LOGIN_TAG"
-fi
+start_and_wait
 
-sleep 3
 
 inputKeys "string root; enter; sleep 1;"
 if [ "$VM_ROOT_PASSWORD" ]; then
@@ -192,12 +196,6 @@ EOF
 ###############################################################
 
 
-if [ -e "hooks/postBuild.sh" ]; then
-  echo "hooks/postBuild.sh"
-  cat "hooks/postBuild.sh"
-  ssh $osname sh<"hooks/postBuild.sh"
-fi
-
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
 
 #upload reboot.sh
@@ -230,39 +228,46 @@ crontab -l
 
 EOF
 
-# Need to shutdown VM before installing packages as the postBuild hook
-# probably upgraded the OS snapshot so it needs to reboot.
-ssh $osname  "$VM_SHUTDOWN_CMD"
+#set zfs TRIM/discard support to try to reclaim space when large changes are
+#made
+ssh "$osname" sh <<EOF
+echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
+echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
+EOF
 
-sleep 30
+shutdown_and_wait() {
+  ssh $osname  "$VM_SHUTDOWN_CMD"
 
-if $vmsh isRunning $osname; then
-  if ! $vmsh shutdownVM $osname; then
-    echo "shutdown error"
+  sleep 30
+
+  if $vmsh isRunning $osname; then
+    if ! $vmsh shutdownVM $osname; then
+      echo "shutdown error"
+    fi
   fi
+
+  while $vmsh isRunning $osname; do
+    sleep 5
+  done
+}
+
+restart_and_wait() {
+  shutdown_and_wait
+  start_and_wait
+}
+
+# Need to restart VM before installing packages as the postBuild hook
+# probably upgraded the OS snapshot so it needs to reboot.
+restart_and_wait
+
+
+if [ -e "hooks/postBuild.sh" ]; then
+  echo "hooks/postBuild.sh"
+  cat "hooks/postBuild.sh"
+  ssh $osname sh<"hooks/postBuild.sh"
 fi
 
-while $vmsh isRunning $osname; do
-  sleep 5
-done
-
-# Start it back up
-$vmsh startVM $osname
-
-sleep 2
-
-
-###############################################
-
-if [ -e "hooks/waitForLoginTag.sh" ]; then
-  echo "hooks/waitForLoginTag.sh"
-  cat "hooks/waitForLoginTag.sh"
-  . "hooks/waitForLoginTag.sh"
-else
-  waitForText "$VM_LOGIN_TAG"
-fi
-
-sleep 3
+restart_and_wait
 
 # purge old snapshots from the system upgrade
 
@@ -278,21 +283,8 @@ if [ "$VM_PRE_INSTALL_PKGS" ]; then
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
 
-ssh $osname  "$VM_SHUTDOWN_CMD"
 
-sleep 30
-
-###############################################################
-
-if $vmsh isRunning $osname; then
-  if ! $vmsh shutdownVM $osname; then
-    echo "shutdown error"
-  fi
-fi
-
-while $vmsh isRunning $osname; do
-  sleep 5
-done
+shutdown_and_wait
 
 
 ##############################################################
