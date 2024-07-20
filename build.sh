@@ -322,6 +322,13 @@ ls -lh ${osname}.qcow2
 echo "Compressing $ova, this will take a long time..."
 sudo xz -z9 --stdout ${osname}.qcow2 > $ova
 
+ova_size=`du -k ${ova} | cut -f 1`
+if [ ${ova_size} -gt 2097152 ] ; then
+  echo "OVA exceeds 2G, splitting in 2G chunks..."
+  split -b 2G -d -a 1 "${ova}" "${ova}."
+  rm -f "${ova}"
+fi
+
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
 echo "contents after export:"

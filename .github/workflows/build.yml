@@ -55,12 +55,12 @@ jobs:
     - name: Upload Release Asset
       if: "contains(github.ref, 'refs/tags/')"
       id: upload-release-asset
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
-          solaris-${{ matrix.os }}.qcow2.xz
+          solaris-${{ matrix.os }}.qcow2.xz*
           solaris-${{ matrix.os }}-id_rsa.pub
           solaris-${{ matrix.os }}-host.id_rsa
 
