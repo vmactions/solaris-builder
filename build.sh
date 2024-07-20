@@ -120,6 +120,10 @@ else
   exit 1
 fi
 
+
+echo "VM image size immediately after install:"
+ls -lh ${osname}.qcow2
+
 $vmsh startVM $osname
 
 sleep 2
@@ -307,14 +311,20 @@ df -h
 
 ova="$osname-$VM_RELEASE.qcow2.xz"
 
-echo "Exporting $ova ... this will take a long time"
 
-# The exportOVA command roughly does the same thing, but creates an
-# intermediate copy which we don't have the disk space for.  So instead we
-# just run xz direct ourselves, but because of the GitHub size limits we're
-# going to use the "-9" compression level.
-
+# The exportOVA command doesn't try to compact the qcow2 file and also uses
+# a lesser compression.
 #$vmsh exportOVA $osname "$ova"
+
+# compact the qcow2 file by exporting it
+echo "Compacting ${osname}.qcow2, this will take a long time..."
+sudo qemu-img convert -O qcow2 ${osname}.qcow2 ${osname}.qcow2.compact
+sudo rm -f ${osname}.qcow2
+sudo mv ${osname}.qcow2.compact ${osname}.qcow2
+ls -lh ${osname}.qcow2
+
+# Compress
+echo "Compressing $ova ... this will take a long time..."
 sudo pv ${osname}.qcow2 | xz -z9 > $ova
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
