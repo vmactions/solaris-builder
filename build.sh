@@ -315,7 +315,7 @@ echo "Exporting $ova ... this will take a long time"
 # going to use the "-9" compression level.
 
 #$vmsh exportOVA $osname "$ova"
-sudo xz -z -9 -k --stdout $osname.qcow2 > $ova
+sudo xz -z -9 -k -T 0 --stdout $osname.qcow2 > $ova
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
