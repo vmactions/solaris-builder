@@ -316,8 +316,8 @@ sudo mv ${osname}.qcow2.compact ${osname}.qcow2
 ls -lh ${osname}.qcow2
 
 # Compress
-echo "Compressing $ova ... this will take a long time..."
-sudo pv ${osname}.qcow2 | xz -z9 > $ova
+echo "Compressing $ova, this will take a long time..."
+sudo xz -z9 --stdout ${osname}.qcow2 > $ova
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 

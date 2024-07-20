@@ -43,7 +43,6 @@ jobs:
         # this might remove tools that are actually needed,
         # if set to "true" but frees about 6 GB
         tool-cache: false
-    - run: sudo apt-get install -y pv
     - uses: actions/checkout@v4
     - name: Creating Web console
       uses: vmactions/cf-tunnel@v0
