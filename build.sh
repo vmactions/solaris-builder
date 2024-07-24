@@ -125,7 +125,6 @@ echo "VM image size immediately after install:"
 ls -lh ${osname}.qcow2
 
 
-
 start_and_wait() {
   $vmsh startVM $osname
   sleep 2
@@ -140,10 +139,30 @@ start_and_wait() {
   sleep 3
 }
 
+shutdown_and_wait() {
+  ssh $osname  "$VM_SHUTDOWN_CMD"
+
+  sleep 30
+
+  if $vmsh isRunning $osname; then
+    if ! $vmsh shutdownVM $osname; then
+      echo "shutdown error"
+    fi
+  fi
+
+  while $vmsh isRunning $osname; do
+    sleep 5
+  done
+}
+
+restart_and_wait() {
+  shutdown_and_wait
+  start_and_wait
+}
+
 ###############################################
 
 start_and_wait
-
 
 inputKeys "string root; enter; sleep 1;"
 if [ "$VM_ROOT_PASSWORD" ]; then
@@ -214,7 +233,6 @@ END
 EOF
 fi
 
-
 #set cronjob
 ssh "$osname" sh <<EOF
 chmod +x /reboot.sh
@@ -228,37 +246,16 @@ crontab -l
 
 EOF
 
-# set zfs TRIM/discard support to try to reclaim space when large changes are
-# made
-ssh "$osname" sh <<EOF
-echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
-echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
-EOF
 
-shutdown_and_wait() {
-  ssh $osname  "$VM_SHUTDOWN_CMD"
+if [ -e "hooks/sysUpdate.sh" ]; then
+  echo "hooks/sysUpdate.sh"
+  cat "hooks/sysUpdate.sh"
+  ssh $osname sh<"hooks/sysUpdate.sh"
 
-  sleep 30
+  # We need to reboot after system updates
+  restart_and_wait
+fi
 
-  if $vmsh isRunning $osname; then
-    if ! $vmsh shutdownVM $osname; then
-      echo "shutdown error"
-    fi
-  fi
-
-  while $vmsh isRunning $osname; do
-    sleep 5
-  done
-}
-
-restart_and_wait() {
-  shutdown_and_wait
-  start_and_wait
-}
-
-# Need to restart VM before installing packages as the postBuild hook
-# probably upgraded the OS snapshot so it needs to reboot.
-restart_and_wait
 
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
@@ -267,44 +264,28 @@ if [ -e "hooks/postBuild.sh" ]; then
 fi
 
 
-# If a system upgrade was performed by the postBuild.sh, we need to restart and
-# purge the old OS snapshot to free up space.
-restart_and_wait
-
-echo "Purging any stale OS snapshots..."
-ssh "$osname" sh <<'EOF'
-beadm list | tail +3 | while read -r line; do
-  name=`echo $line | awk '{ print $1 };'`
-  mountpoint=`echo $line | awk '{ print $3 };'`
-  if [ "$mountpoint" = "-" ] ; then
-    echo "Removing $name: beadm destroy -F $name"
-    beadm destroy -F $name
-  fi
-done
-EOF
-
-
 # Install any requested packages
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
 fi
 
-
+# Done!
 shutdown_and_wait
 
 
 ##############################################################
 
-echo "Clean up ISO for more space"
-sudo rm -f solaris.iso
+if [ "$VM_ISO_LINK" ]; then
+  echo "Clean up ISO for more space"
+  sudo rm -f ${osname}.iso
+fi
 
 echo "contents of home directory:"
 ls -lah
 
 echo "free space:"
 df -h
-
 
 ova="$osname-$VM_RELEASE.qcow2.xz"
 # The exportOVA command doesn't try to compact the qcow2 file and also uses
