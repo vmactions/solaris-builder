@@ -22,7 +22,6 @@ svcadm restart autofs
 echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
 echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
 
-
 # Install legacy OpenCSW package repository
 wget -L http://get.opencsw.org/now
 echo y | pkgadd -v -d now all
@@ -32,12 +31,12 @@ if ! /opt/csw/bin/pkgutil -U ; then
 fi
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
 
-
-# If using CBE, do some additional tasks
 SOLARIS_VER=`uname -v`
+
 if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
-  # We are using the CBE solaris release now, it doesn't have any updates but it
-  # does have the wrong package publisher set by default:
+  # If using the CBE release, we need to set the proper publisher and try to
+  # do a full system update (but at this time it appears Oracle isn't publishing
+  # updates for CBE)
   #  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
   pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
 
@@ -52,4 +51,10 @@ if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
     echo "pkg update failed"
     exit 1
   fi
+else
+  # When not using CBE we need to update the CA Certificates
+  ls -lah /opt/csw/bin/
+  /opt/csw/bin/pkgutil -y -i cacertificates
+  rm -rf /etc/openssl/certs/*
+  cp /etc/opt/csw/ssl/certs/* /etc/openssl/certs/
 fi
