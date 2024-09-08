@@ -290,25 +290,7 @@ df -h
 ova="$osname-$VM_RELEASE.qcow2.xz"
 # The exportOVA command doesn't try to compact the qcow2 file and also uses
 # a lesser compression.
-#$vmsh exportOVA $osname "$ova"
-
-# compact the qcow2 file by exporting it
-echo "Compacting ${osname}.qcow2, this will take a long time..."
-sudo qemu-img convert -O qcow2 ${osname}.qcow2 ${osname}.qcow2.compact
-sudo rm -f ${osname}.qcow2
-sudo mv ${osname}.qcow2.compact ${osname}.qcow2
-ls -lh ${osname}.qcow2
-
-# Compress
-echo "Compressing $ova, this will take a long time..."
-sudo xz -z9 --stdout ${osname}.qcow2 > $ova
-
-ova_size=`du -k ${ova} | cut -f 1`
-if [ ${ova_size} -gt 2097152 ] ; then
-  echo "OVA exceeds 2G, splitting in 2G chunks..."
-  split -b 2G -d -a 1 "${ova}" "${ova}."
-  rm -f "${ova}"
-fi
+$vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
 
