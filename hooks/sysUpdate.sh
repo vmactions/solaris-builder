@@ -22,13 +22,6 @@ svcadm restart autofs
 echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
 echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
 
-# We are using the CBE solaris release now, it doesn't have any updates but it
-# does have the wrong package publisher set by default:
-#  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
-pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
-
-# Refresh Package list
-pkg refresh --full
 
 # Install legacy OpenCSW package repository
 wget -L http://get.opencsw.org/now
@@ -40,11 +33,23 @@ fi
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
 
 
-# Upgrade release.  Catch return code 4 and treat as success as it just means
-# nothing to upgrade.
-rv=0
-pkg update --accept --no-backup-be -v '*' || rv=$?
-if [ "$rv" != 0 -a "$rv" != 4 ] ; then
-  echo "pkg update failed"
-  exit 1
+# If using CBE, do some additional tasks
+SOLARIS_VER=`uname -v`
+if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
+  # We are using the CBE solaris release now, it doesn't have any updates but it
+  # does have the wrong package publisher set by default:
+  #  https://blogs.oracle.com/solaris/post/building-open-source-software-on-oracle-solaris-114-cbe-release
+  pkg set-publisher -G'*' -g http://pkg.oracle.com/solaris/release/ solaris
+
+  # Refresh Package list
+  pkg refresh --full
+
+  # Upgrade release.  Catch return code 4 and treat as success as it just means
+  # nothing to upgrade.
+  rv=0
+  pkg update --accept --no-backup-be -v '*' || rv=$?
+  if [ "$rv" != 0 -a "$rv" != 4 ] ; then
+    echo "pkg update failed"
+    exit 1
+  fi
 fi
