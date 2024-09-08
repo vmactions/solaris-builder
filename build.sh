@@ -288,8 +288,6 @@ echo "free space:"
 df -h
 
 ova="$osname-$VM_RELEASE.qcow2.xz"
-# The exportOVA command doesn't try to compact the qcow2 file and also uses
-# a lesser compression.
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
