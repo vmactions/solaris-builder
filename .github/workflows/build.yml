@@ -55,7 +55,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: |
-          solaris-${{ matrix.os }}.qcow2.xz
+          solaris-${{ matrix.os }}.qcow2.xz*
           solaris-${{ matrix.os }}-id_rsa.pub
           solaris-${{ matrix.os }}-host.id_rsa
 
