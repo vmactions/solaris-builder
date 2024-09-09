@@ -30,6 +30,7 @@ concurrency:
 jobs:
   build:
     strategy:
+      max-parallel: 2
       matrix:
         os: ["11.4", "11.4-gcc", "11.4-cbe", "11.4-cbe-gcc" ]
     runs-on: ubuntu-24.04
