@@ -23,9 +23,7 @@ echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
 echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
 
 # Install legacy OpenCSW package repository
-wget -L http://get.opencsw.org/now
-echo y | pkgadd -v -d now all
-rm -f now
+echo y | pkgadd -v -d http://get.opencsw.org/now all
 if ! /opt/csw/bin/pkgutil -U ; then
   echo "pkgutil failed"
 fi
