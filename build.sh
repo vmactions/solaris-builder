@@ -246,28 +246,26 @@ crontab -l
 
 EOF
 
-
-if [ -e "hooks/sysUpdate.sh" ]; then
-  echo "hooks/sysUpdate.sh"
-  cat "hooks/sysUpdate.sh"
-  ssh $osname sh<"hooks/sysUpdate.sh"
-
-  # We need to reboot after system updates
-  restart_and_wait
-fi
-
-
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
   ssh $osname sh<"hooks/postBuild.sh"
-fi
 
+  # Reboot here, possible there were system updates done that need
+  # a reboot to take effect before more operations can be done
+  restart_and_wait
+fi
 
 # Install any requested packages
 if [ "$VM_PRE_INSTALL_PKGS" ]; then
   echo "$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
   ssh $osname sh <<<"$VM_INSTALL_CMD $VM_PRE_INSTALL_PKGS"
+fi
+
+if [ -e "hooks/finalize.sh" ]; then
+  echo "hooks/finalize.sh"
+  cat "hooks/finalize.sh"
+  ssh $osname sh<"hooks/finalize.sh"
 fi
 
 # Done!
@@ -287,7 +285,8 @@ ls -lah
 echo "free space:"
 df -h
 
-ova="$osname-$VM_RELEASE.qcow2.xz"
+ova="$osname-$VM_RELEASE.qcow2"
+echo "Exporting $ova"
 $vmsh exportOVA $osname "$ova"
 
 cp ~/.ssh/id_rsa  $osname-$VM_RELEASE-host.id_rsa
