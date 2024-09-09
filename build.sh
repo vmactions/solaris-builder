@@ -192,15 +192,6 @@ echo "chmod 600 ~/.ssh/authorized_keys">>enablessh.local
 echo "exit">>enablessh.local
 echo >>enablessh.local
 
-if [ -e "hooks/postBuild.sh" ]; then
-  echo "hooks/postBuild.sh"
-  cat "hooks/postBuild.sh"
-  ssh $osname sh<"hooks/postBuild.sh"
-
-  # Reboot here, possible there were system updates done that need
-  # a reboot to take effect before more operations can be done
-  restart_and_wait
-fi
 
 $vmsh inputFile $osname enablessh.local
 
@@ -220,9 +211,17 @@ echo "     ServerAliveInterval 1" >>.ssh/config
 
 EOF
 
-
 ###############################################################
 
+if [ -e "hooks/postBuild.sh" ]; then
+  echo "hooks/postBuild.sh"
+  cat "hooks/postBuild.sh"
+  ssh $osname sh<"hooks/postBuild.sh"
+
+  # Reboot here, possible there were system updates done that need
+  # a reboot to take effect before more operations can be done
+  restart_and_wait
+fi
 
 ssh $osname 'cat ~/.ssh/id_rsa.pub' >$osname-$VM_RELEASE-id_rsa.pub
 
