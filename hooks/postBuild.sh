@@ -22,6 +22,14 @@ svcadm restart autofs
 echo "set zfs:zfs_unmap_ignore_size=0x10000" > /etc/system.d/zfs
 echo "set zfs:zfs_log_unmap_ignore_size=0x10000" >> /etc/system.d/zfs
 
+# Try to debug random network issues
+echo "==== Network Configuration ===="
+echo "** ip address:"
+ifconfig -a
+echo "** dns configuration:"
+cat /etc/resolv.conf
+echo "==============================="
+
 # Install legacy OpenCSW package repository
 echo y | pkgadd -v -d http://get.opencsw.org/now all
 if ! /opt/csw/bin/pkgutil -U ; then
