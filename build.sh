@@ -84,9 +84,8 @@ if [ "$VM_ISO_LINK" ]; then
   $vmsh createVM  $VM_ISO_LINK $osname $ostype $sshport
 
   sleep 2
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh openConsole "$osname"
-  fi
+
+  $vmsh openConsole "$osname"
 
   if [ -e "hooks/installOpts.sh" ]; then
     echo "hooks/installOpts.sh"
@@ -111,9 +110,9 @@ if [ "$VM_ISO_LINK" ]; then
   while $vmsh isRunning $osname; do
     sleep 20
   done
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh closeConsole "$osname"
-  fi
+
+  $vmsh closeConsole "$osname"
+
 
   if [[ "$VM_ISO_LINK" == *"img" ]]; then
     $vmsh detachIMG "$osname"
@@ -129,8 +128,8 @@ elif [ "$VM_VHD_LINK" ]; then
         $vmsh download "$VM_VHD_LINK" "$_img.gz"
         gunzip -c "$_img.gz" > "$_img"
       fi
-        qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
-      else
+      qemu-img convert -f raw -O qcow2 -o preallocation=off "$_img" "$osname.qcow2"
+    else
       if [ ! -e "$osname.qcow2.xz" ]; then
         $vmsh download "$VM_VHD_LINK" $osname.qcow2.xz
       fi
@@ -156,9 +155,8 @@ ls -lh
 start_and_wait() {
   $vmsh startVM $osname
   sleep 2
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh openConsole "$osname"
-  fi
+  $vmsh openConsole "$osname"
+
   if [ -e "hooks/waitForLoginTag.sh" ]; then
     echo "hooks/waitForLoginTag.sh"
     cat "hooks/waitForLoginTag.sh"
@@ -184,9 +182,9 @@ shutdown_and_wait() {
   while $vmsh isRunning $osname; do
     sleep 5
   done
-  if [ "$VM_USE_CONSOLE_BUILD" ]; then
-    $vmsh closeConsole "$osname"
-  fi
+
+  $vmsh closeConsole "$osname"
+
 }
 
 restart_and_wait() {
