@@ -11,6 +11,11 @@ if [ -z "$_conf" ] ; then
 fi
 
 
+
+
+VM_HOST_IP="192.168.122.1"
+VM_HOST_IP_LISTEN_PORT=48392
+
 . "$_conf"
 
 
@@ -274,7 +279,7 @@ ssh $osname sh <<EOF
 echo 'StrictHostKeyChecking=no' >.ssh/config
 
 echo "Host host" >>.ssh/config
-echo "     HostName  192.168.122.1" >>.ssh/config
+echo "     HostName  $VM_HOST_IP" >>.ssh/config
 echo "     User $USER" >>.ssh/config
 echo "     ServerAliveInterval 1" >>.ssh/config
 
@@ -310,7 +315,11 @@ if [ -e "hooks/reboot.sh" ]; then
 else
   ssh "$osname" "cat - >/reboot.sh" <<EOF
 sleep 5
-ssh host sh <<END
+myip=\$(ifconfig | grep "inet " | awk '{print \$2}' | grep 192.168 | head -1)
+if [ "\$myip" ]; then
+  echo "\$myip" | timeout 2 nc "$VM_HOST_IP" "$VM_HOST_IP_LISTEN_PORT"
+fi
+timeout 5 ssh host sh <<END
 env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
 
 END
