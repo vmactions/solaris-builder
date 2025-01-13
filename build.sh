@@ -290,7 +290,8 @@ EOF
 if [ -e "hooks/postBuild.sh" ]; then
   echo "hooks/postBuild.sh"
   cat "hooks/postBuild.sh"
-  ssh $osname VM_RELEASE="$VM_RELEASE" sh<"hooks/postBuild.sh"
+  export VM_RELEASE
+  ssh -o "SendEnv=VM_RELEASE" $osname sh<"hooks/postBuild.sh"
 
   # Reboot here, possible there were system updates done that need
   # a reboot to take effect before more operations can be done
@@ -315,16 +316,13 @@ if [ -e "hooks/reboot.sh" ]; then
 else
   ssh "$osname" "cat - >/reboot.sh" <<EOF
 sleep 5
-myip=\$(ifconfig | grep "inet " | awk '{print \$2}' | grep 192.168 | head -1)
-if [ "\$myip" ]; then
-  echo "\$myip" | timeout 2 nc "$VM_HOST_IP" "$VM_HOST_IP_LISTEN_PORT"
-fi
-timeout 5 ssh host sh <<END
+ssh host sh <<END
 env | grep SSH_CLIENT | cut -d = -f 2 | cut -d ' ' -f 1 >$osname.rebooted
 
 END
 
 EOF
+  ssh "$osname" "cat /reboot.sh"
 fi
 
 #set cronjob
@@ -350,7 +348,8 @@ fi
 if [ -e "hooks/finalize.sh" ]; then
   echo "hooks/finalize.sh"
   cat "hooks/finalize.sh"
-  ssh $osname sh<"hooks/finalize.sh"
+  export VM_RELEASE
+  ssh -o "SendEnv=VM_RELEASE" $osname sh<"hooks/finalize.sh"
 fi
 
 # Done!
