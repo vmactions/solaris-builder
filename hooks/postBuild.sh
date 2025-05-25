@@ -36,6 +36,7 @@ echo y | pkgadd -d ./now all
 if ! /opt/csw/bin/pkgutil -U ; then
   echo "pkgutil failed"
 fi
+rm -f now
 
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
 
