@@ -31,10 +31,12 @@ cat /etc/resolv.conf
 echo "==============================="
 
 # Install legacy OpenCSW package repository
-echo y | pkgadd -v -d http://get.opencsw.org/now all
+/usr/bin/wget --no-check-certificate https://get.opencsw.org/now
+echo y | pkgadd -d ./now all
 if ! /opt/csw/bin/pkgutil -U ; then
   echo "pkgutil failed"
 fi
+
 gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /etc/default/login
 
 SOLARIS_VER=`uname -v`
