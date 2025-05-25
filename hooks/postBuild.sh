@@ -39,7 +39,7 @@ gsed -i 's|#SUPATH=/usr/bin:/usr/sbin|SUPATH=/usr/bin:/usr/sbin:/opt/csw/bin|' /
 
 SOLARIS_VER=`uname -v`
 
-if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
+#if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
   # If using the CBE release, we need to set the proper publisher and try to
   # do a full system update (but at this time it appears Oracle isn't publishing
   # updates for CBE)
@@ -57,10 +57,10 @@ if [ "$SOLARIS_VER" = "11.4.42.111.0" ] ; then
     echo "pkg update failed"
     exit 1
   fi
-else
-  # When not using CBE we need to update the CA Certificates
-  ls -lah /opt/csw/bin/
-  /opt/csw/bin/pkgutil -y -i cacertificates
-  rm -rf /etc/openssl/certs/*
-  cp /etc/opt/csw/ssl/certs/* /etc/openssl/certs/
-fi
+#else
+#  # When not using CBE we need to update the CA Certificates
+#  ls -lah /opt/csw/bin/
+#  /opt/csw/bin/pkgutil -y -i cacertificates
+#  rm -rf /etc/openssl/certs/*
+#  cp /etc/opt/csw/ssl/certs/* /etc/openssl/certs/
+#fi
