@@ -65,5 +65,6 @@ jobs:
           solaris-${{ matrix.os }}.qcow2.zst*
           solaris-${{ matrix.os }}-id_rsa.pub
           solaris-${{ matrix.os }}-host.id_rsa
+          solaris-${{ matrix.os }}.xml
 
 
