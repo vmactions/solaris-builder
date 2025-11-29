@@ -1,11 +1,11 @@
 
 
-[![Build](https://github.com/vmactions/solaris-builder/actions/workflows/build.yml/badge.svg)](https://github.com/vmactions/solaris-builder/actions/workflows/build.yml)
+[![Build](https://github.com/anyvm-org/solaris-builder/actions/workflows/build.yml/badge.svg)](https://github.com/anyvm-org/solaris-builder/actions/workflows/build.yml)
 
 Latest: v1.0.8
 
 
-The image builder for [solaris-vm](https://github.com/vmactions/solaris-vm)
+The image builder for `solaris`
 
 
 How to use:
